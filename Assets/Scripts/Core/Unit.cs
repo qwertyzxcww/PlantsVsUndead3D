@@ -1,28 +1,37 @@
 ﻿using UnityEngine;
-using UnityEngine.Serialization;
 
-public class Unit : MonoBehaviour
+/// <summary>
+/// Базовый юнит (растения, враги). Хранит здоровье.
+/// </summary>
+public sealed class Unit : MonoBehaviour
 {
+    // Текущее здоровье юнита
     public float Health;
 
+    /// <summary>
+    /// Получение урона
+    /// </summary>
     public void TakeDamage(float amount)
     {
         Health -= amount;
+
         if (Health <= 0f)
         {
-            Destroy(gameObject);
             Die();
         }
     }
-    
+
+    /// <summary>
+    /// Уничтожение объекта + освобождение плитки, если это растение
+    /// </summary>
     private void Die()
     {
         if (transform.parent != null && transform.parent.CompareTag("Tile"))
         {
-            var collider = transform.parent.GetComponent<Collider>();
-            if (collider != null)
+            Collider col = transform.parent.GetComponent<Collider>();
+            if (col != null)
             {
-                collider.enabled = true;
+                col.enabled = true;
             }
         }
 

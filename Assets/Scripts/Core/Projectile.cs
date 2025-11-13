@@ -1,10 +1,14 @@
 ﻿using UnityEngine;
 
-public class Projectile : MonoBehaviour
+/// <summary>
+/// Снаряд, летящий вперёд. Наносит урон врагам.
+/// </summary>
+public sealed class Projectile : MonoBehaviour
 {
-    private float _speed = 15f;
-    private float _damage = 5f;
-    private float _maxDistance = 6f;
+    [Header("Параметры снаряда")]
+    [SerializeField] private float _speed = 15f;
+    [SerializeField] private float _damage = 5f;
+    [SerializeField] private float _maxDistance = 6f;
 
     private Vector3 _startPos;
 
@@ -15,8 +19,12 @@ public class Projectile : MonoBehaviour
 
     private void Update()
     {
-        transform.Translate(Vector3.back * (_speed * Time.deltaTime));
-        if (Vector3.Distance(_startPos, transform.position) > _maxDistance)
+        // Двигаем снаряд в локальном forward-направлении
+        transform.Translate(Vector3.back * (_speed * Time.deltaTime), Space.Self);
+
+        // Уничтожаем если пролетел слишком далеко
+        float distance = Vector3.Distance(_startPos, transform.position);
+        if (distance > _maxDistance)
         {
             Destroy(gameObject);
         }
@@ -24,10 +32,18 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Enemy"))
+        // Урон наносим только врагам
+        if (other.CompareTag("Enemy") == false)
         {
-            other.GetComponent<Unit>()?.TakeDamage(_damage);
-            Destroy(gameObject);
+            return;
         }
+
+        Unit unit = other.GetComponent<Unit>();
+        if (unit != null)
+        {
+            unit.TakeDamage(_damage);
+        }
+
+        Destroy(gameObject);
     }
 }

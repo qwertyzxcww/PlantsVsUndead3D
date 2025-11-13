@@ -1,7 +1,11 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Loader : MonoBehaviour
+/// <summary>
+/// Простая загрузка сцен.
+/// Сбрасывает Time.timeScale, чтобы не зависнуть после победы.
+/// </summary>
+public sealed class Loader : MonoBehaviour
 {
     public void LoadScene(int index)
     {

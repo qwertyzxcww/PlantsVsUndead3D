@@ -15,10 +15,10 @@ MonoBehaviour:
   prefab: {fileID: 4781266878486520274, guid: 235d7e7a03dc6c64888841c3e773de7f, type: 3}
   cost: 50
   placementYOffset: 0.5
-  health: 5
+  health: 10
   projectilePrefab: {fileID: 0}
   shootCooldown: 0
   shootRange: 0
   isIncomeGenerator: 1
-  incomeCooldown: 5
+  incomeCooldown: 3
   incomeAmount: 25

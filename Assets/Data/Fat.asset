@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Fat
   m_EditorClassIdentifier: 
   prefab: {fileID: 8037423010688342151, guid: 43fb4c65de8663f44942a0421be6b157, type: 3}
-  health: 25
-  movementSpeed: 0.5
+  health: 30
+  movementSpeed: 0.4
   damage: 3
   damageCooldown: 2
-  worth: 20
+  worth: 15

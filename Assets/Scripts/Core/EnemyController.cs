@@ -1,28 +1,40 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(Unit))]
-public class EnemyController : MonoBehaviour
+/// <summary>
+/// Управляет движением врага и атакой растений.
+/// </summary>
+public sealed class EnemyController : MonoBehaviour
 {
-    public float MovementSpeed;
-    public float Damage;
-    public float DamageCooldown;
-    public float Worth;
+    [Header("Параметры врага")]
+    [SerializeField] private float _movementSpeed;
+    [SerializeField] private float _damage;
+    [SerializeField] private float _damageCooldown;
+    [SerializeField] private float _worth;
 
     private float _damageTimer;
     private Unit _unit;
 
+    public float MovementSpeed { get => _movementSpeed; set => _movementSpeed = value; }
+    public float Damage { get => _damage; set => _damage = value; }
+    public float DamageCooldown { get => _damageCooldown; set => _damageCooldown = value; }
+    public float Worth { get => _worth; set => _worth = value; }
+
     private void Start()
     {
         _unit = GetComponent<Unit>();
-        _damageTimer = 0f;
         gameObject.tag = "Enemy";
     }
 
     private void Update()
     {
         _damageTimer -= Time.deltaTime;
-        if (Physics.Raycast(transform.position, Vector3.back, out var hit, 0.6f))
+
+        // Проверяем коллизию перед собой
+        RaycastHit hit;
+
+        if (Physics.Raycast(transform.position, Vector3.back, out hit, 0.6f))
         {
+            // Дошёл до конца поля
             if (hit.transform.CompareTag("TileGoal"))
             {
                 GameManager.Instance.LoseLife();
@@ -30,26 +42,34 @@ public class EnemyController : MonoBehaviour
                 return;
             }
 
+            // Атакуем растение
             if (hit.transform.CompareTag("Tower"))
             {
                 if (_damageTimer <= 0f)
                 {
-                    var towerUnit = hit.transform.GetComponent<Unit>();
-                    towerUnit?.TakeDamage(Damage);
-                    _damageTimer = DamageCooldown;
+                    Unit towerUnit = hit.transform.GetComponent<Unit>();
+                    if (towerUnit != null)
+                    {
+                        towerUnit.TakeDamage(_damage);
+                    }
+
+                    _damageTimer = _damageCooldown;
                 }
+
                 return;
             }
         }
-        transform.Translate(Vector3.back * (MovementSpeed * Time.deltaTime), Space.World);
-    }
 
+        // Движение вперёд
+        transform.Translate(Vector3.back * (_movementSpeed * Time.deltaTime), Space.World);
+    }
 
     private void OnDestroy()
     {
+        // Выдаём деньги игроку, если враг умер
         if (_unit != null && _unit.Health <= 0f)
         {
-            GameManager.Instance.AddMoney(Worth);
+            GameManager.Instance.AddMoney(_worth);
         }
     }
 }

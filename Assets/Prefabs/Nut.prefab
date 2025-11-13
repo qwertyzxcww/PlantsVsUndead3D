@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6333792264458033010}
   - component: {fileID: 8554941917271272332}
   - component: {fileID: -4844477605835895879}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Nut
   m_TagString: Tower
   m_Icon: {fileID: 0}
@@ -131,15 +131,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14c541b1f6384c53b3295a9d6c050257, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemyLayerMask:
+  _projectilePrefab: {fileID: 0}
+  _shootCooldown: 0
+  _shootRange: 0
+  _isIncomeGenerator: 0
+  _incomeCooldown: 0
+  _incomeAmount: 0
+  _enemyMask:
     serializedVersion: 2
     m_Bits: 8
-  ProjectilePrefab: {fileID: 0}
-  ShootCooldown: 0
-  ShootRange: 0
-  IsIncomeGenerator: 0
-  IncomeCooldown: 0
-  IncomeAmount: 0
 --- !u!114 &-4844477605835895879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,4 +152,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a9171b9803244c78fd8ad4a23a7011c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Health: 20
+  _health: 10

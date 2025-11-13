@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8230785766457229723}
   - component: {fileID: 2109304349246209426}
   - component: {fileID: 3584562782306057871}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: SunFlower
   m_TagString: Tower
   m_Icon: {fileID: 0}
@@ -124,15 +124,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14c541b1f6384c53b3295a9d6c050257, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemyLayerMask:
+  _projectilePrefab: {fileID: 0}
+  _shootCooldown: 1
+  _shootRange: 10
+  _isIncomeGenerator: 1
+  _incomeCooldown: 5
+  _incomeAmount: 25
+  _enemyMask:
     serializedVersion: 2
     m_Bits: 8
-  ProjectilePrefab: {fileID: 0}
-  ShootCooldown: 0
-  ShootRange: 0
-  IsIncomeGenerator: 0
-  IncomeCooldown: 0
-  IncomeAmount: 0
 --- !u!114 &3584562782306057871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -145,4 +145,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a9171b9803244c78fd8ad4a23a7011c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Health: 5
+  _health: 10

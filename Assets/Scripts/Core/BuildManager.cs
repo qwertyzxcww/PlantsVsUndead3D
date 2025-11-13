@@ -1,85 +1,136 @@
 ﻿using UnityEngine;
 
-public class BuildManager : MonoBehaviour
+/// <summary>
+/// Управляет установкой растений и удалением (лопатой).
+/// Хранит выбранный тип растения.
+/// </summary>
+public sealed class BuildManager : MonoBehaviour
 {
     public static BuildManager Instance { get; private set; }
 
-    [SerializeField] public PlantData[] _plantTypes;
+    [Header("Список растений в магазине")]
+    [SerializeField] private PlantData[] _plantTypes;
 
+    // Выбранное растение (-1 если ничего не выбрано)
+    private int _selectedPlant = -1;
+
+    // Активирован ли режим лопаты
     private bool _shovelMode;
-    private int selectedPlant = -1;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        // Синглтон BuildManager
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
-    
+
     private void Update()
     {
-        if (!Input.GetMouseButtonDown(0)) return;
-
-        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (!Physics.Raycast(ray, out var hit, 100f))
+        // ЛКМ не нажата — не обрабатываем
+        if (Input.GetMouseButtonDown(0) == false)
         {
             return;
         }
 
+        // Пускаем луч из камеры в мир
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        // Если никуда не попали — выходим
+        if (Physics.Raycast(ray, out hit, 100f) == false)
+        {
+            return;
+        }
+
+        // ---------------------------------------------------------
+        // УДАЛЕНИЕ РАСТЕНИЯ (режим лопаты)
+        // ---------------------------------------------------------
         if (_shovelMode && hit.transform.CompareTag("Tower"))
         {
-            var tower = hit.transform.gameObject;
-            var tile  = tower.transform.parent;
-            var collider   = tile.GetComponent<Collider>();
-            if (collider != null) collider.enabled = true;
-            Destroy(tower);
+            Transform tile = hit.transform.parent;
+
+            // Включаем коллайдер плитки
+            if (tile != null)
+            {
+                Collider col = tile.GetComponent<Collider>();
+                if (col != null)
+                {
+                    col.enabled = true;
+                }
+            }
+
+            // Удаляем растение
+            Destroy(hit.transform.gameObject);
+
             _shovelMode = false;
             return;
         }
 
-        if (!_shovelMode && selectedPlant >= 0 && hit.transform.CompareTag("Tile"))
+        // ---------------------------------------------------------
+        // УСТАНОВКА РАСТЕНИЯ
+        // ---------------------------------------------------------
+        if (_shovelMode == false && _selectedPlant >= 0 && hit.transform.CompareTag("Tile"))
         {
-            var data = _plantTypes[selectedPlant];
-            if (!GameManager.Instance.TrySpendMoney(data.cost))
+            PlantData data = _plantTypes[_selectedPlant];
+
+            // Проверяем, хватает ли денег
+            bool payment = GameManager.Instance.TrySpendMoney(data.cost);
+            if (payment == false)
             {
                 return;
             }
-            hit.collider.enabled = false;
-            
-            Vector3 pos = hit.transform.position + Vector3.up * data.placementYOffset;
-            var go = Instantiate(data.prefab, pos, Quaternion.identity);
-            go.transform.SetParent(hit.transform, true);
 
-            var unit = go.GetComponent<Unit>();
+            // Чтобы на одну плитку нельзя было ставить два растения
+            hit.collider.enabled = false;
+
+            // Позиция растения
+            Vector3 pos = hit.transform.position + Vector3.up * data.placementYOffset;
+
+            GameObject plant = Instantiate(data.prefab, pos, Quaternion.identity);
+            plant.transform.SetParent(hit.transform);
+
+            // Присваиваем здоровье
+            Unit unit = plant.GetComponent<Unit>();
             if (unit != null)
             {
                 unit.Health = data.health;
             }
 
-            var towerController = go.GetComponent<TowerController>();
-            if (towerController != null)
+            // Передаём параметры TowerController
+            TowerController tower = plant.GetComponent<TowerController>();
+            if (tower != null)
             {
-                towerController.ProjectilePrefab  = data.projectilePrefab;
-                towerController.ShootCooldown     = data.shootCooldown;
-                towerController.ShootRange        = data.shootRange;
-                towerController.IsIncomeGenerator = data.isIncomeGenerator;
-                towerController.IncomeCooldown    = data.incomeCooldown;
-                towerController.IncomeAmount      = data.incomeAmount;
+                tower.ProjectilePrefab = data.projectilePrefab;
+                tower.ShootCooldown = data.shootCooldown;
+                tower.ShootRange = data.shootRange;
+                tower.IsIncomeGenerator = data.isIncomeGenerator;
+                tower.IncomeCooldown = data.incomeCooldown;
+                tower.IncomeAmount = data.incomeAmount;
             }
         }
     }
-    
+
+    /// <summary>
+    /// Выбор растения (кнопки магазина)
+    /// </summary>
     public void SelectPlant(int index)
     {
-        if (index < 0 || index >= _plantTypes.Length)
-        {
-            return;
-        }
-        selectedPlant = index;
+        _selectedPlant = index;
+        _shovelMode = false;
     }
-    
+
+    /// <summary>
+    /// активация лопаты
+    /// </summary>
     public void SelectShovel()
     {
         _shovelMode = true;
-        selectedPlant = -1;
+        _selectedPlant = -1;
     }
 }
