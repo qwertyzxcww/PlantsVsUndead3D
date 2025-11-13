@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌱 PlantsVsUndead 3D
+# 🌱 PlantsVsUndead
 
 ![Unity](https://img.shields.io/badge/Unity-6.0%2B-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
@@ -8,7 +8,7 @@
 
 </div>
 
-**PlantsVsUndead 3D** — небольшой учебный 3D-проект в духе *Plants vs. Zombies*.  
+**PlantsVsUndead** — небольшой учебный 3D-проект в духе *Plants vs. Zombies*.  
 Игрок размещает растения на грядках, чтобы остановить наступающие волны врагов.  
 Игра создана для практики основ **Unity** и **C#**.
 
